@@ -27,7 +27,7 @@ class MyClient(discord.Client):
         return '\n'.join(l)
 
     def get_string_of_movies(self):  
-        return ''.join(list(reversed(self.movie_list)))
+        return '\n'.join(list(reversed(self.movie_list)))
 
     def get_cnt_of_votes(self):
         l = []
@@ -93,7 +93,7 @@ class MyClient(discord.Client):
         leaders = []
         for mem in self.get_channel('218491261152133120').voice_members:
             for role in mem.roles:
-                if self.movie in role.name:
+                if self.movie_role in role.name:
                     leaders.append(mem.name)
         self.leaders = leaders
         # self.movie_list = list(reversed(self.get_channel('350853529662914571').topic.split('\n')))
@@ -102,7 +102,7 @@ class MyClient(discord.Client):
 
     @asyncio.coroutine
     def on_message(self,message):
-        if message.content[-5:] == 'Igor!':
+        if message.content[-5:] == 'Igor!' and (message.channel.id == '292392550940278797' or message.channel.id == '218490502356533249'):
             
             if message.content.startswith('Igor!'):
                 yield from client.send_message(message.channel, 'Yes Master')
@@ -164,7 +164,7 @@ class MyClient(discord.Client):
                 yield from client.send_message(message.channel, "It appears that " + self.movie_choice + " is ranked the " + str(rank) + " Movie Of All Time")
                 self.movie_list.insert(len(self.movie_list)-rank,self.movie_choice)
                 self.save_movies(self.movie_list)
-                yield from self.edit_channel(self.get_channel('218490502356533249'),topic="Royal Academy of Movie Sciences Current Findings:\n\n"+"\n".join(list(reversed(self.movie_list))))
+                #yield from self.edit_channel(self.get_channel('218490502356533249'),topic="Royal Academy of Movie Sciences Current Findings:\n\n"+"\n".join(list(reversed(self.movie_list))))
                 yield from client.send_message(message.channel, "The new rankings have been posted!  Last thing before we end our night of science, " + self.candidates[0] + ", please Choose who will pick the next move!")
 
                 candidates = ''
@@ -254,7 +254,7 @@ class MyClient(discord.Client):
 
             if message.content.startswith('Reload'):
                 leaders = []
-                self.voters = []
+                self.voters = {}
                 for mem in self.get_channel('218491261152133120').voice_members:
                     self.voters[mem.name] = 'Abstain'
                     if "Movie Curator" in mem.roles:
@@ -265,35 +265,38 @@ class MyClient(discord.Client):
 
 
             if message.content.startswith('Rules'):
-                yield from client.send_message(message.channel, "The Rules of Movie Night are as follows:\n")
-                yield from client.send_message(message.channel, "1) When it's your turn to choose movie night, you can pick whatever movie you want")
-                yield from client.send_message(message.channel, "2) Only people who are in the Movie channel Voice Chat are eligible to vote")
-                yield from client.send_message(message.channel, "3) We will vote for one movie at a time, from lowest to highest, until we vote in the negative")
-                yield from client.send_message(message.channel, "4) Who ever picked the last movie picks who gets to choose the next movie")
-                yield from client.send_message(message.channel, "5) Eligible pickers are people who showed up for the movie and haven't picked the last 10 movies. If everyone in the chat has picked a movie, then the list resets and everyone is eligble again.")
-                yield from client.send_message(message.channel, "6) When it's your turn to choose movie night, you can pick whatever movie you want")
+                str1 =  "The Rules of Movie Night are as follows:\n"
+                str1 = str1 +  "1) When it's your turn to choose movie night, you can pick whatever movie you want\n"
+                str1 = str1 +  "2) Only people who are in the Movie channel Voice Chat are eligible to vote\n"
+                str1 = str1 +  "3) We will vote for one movie at a time, from lowest to highest, until we vote in the negative\n"
+                str1 = str1 +  "4) Who ever picked the last movie picks who gets to choose the next movie\n"
+                str1 = str1 +  "5) Eligible pickers are people who showed up for the movie and haven't picked the last 10 movies. If everyone in the chat has picked a movie, then the list resets and everyone is eligble again.\n"
+                str1 = str1 +  "6) When it's your turn to choose movie night, you can pick whatever movie you want\n"
+                yield from client.send_message(message.channel,str1)
 
 
             if message.content.startswith('Help'):
-                yield from client.send_message(message.channel, "These are the following commands to assist with science:\n")
-                yield from client.send_message(message.channel, "Rules Igor! - Lists out the rules of Movie Night")
-                yield from client.send_message(message.channel, "Rankings Igor! - Lists out the scientific rankings of Movie Night")
-                yield from client.send_message(message.channel, "Status Igor! - Lists out my current settings")
-                yield from client.send_message(message.channel, "Voters Igor! - Lists out the voters for Movie Night")
-                yield from client.send_message(message.channel, "Picked Igor! - Lists out who recently picked a movie\n")
+                str2 =  "These are the following commands to assist with science:\n"
+                str2 = str2 +  "Rules Igor! - Lists out the rules of Movie Night\n"
+                str2 = str2 +  "Rankings Igor! - Lists out the scientific rankings of Movie Night\n"
+                str2 = str2 +  "Status Igor! - Lists out my current settings\n"
+                str2 = str2 +  "Voters Igor! - Lists out the voters for Movie Night\n"
+                str2 = str2 +  "Picked Igor! - Lists out who recently picked a movie\n"
+                str2 = str2 +  "\n"
+                str2 = str2 +  "The following commands are for voting:\n"
+                str2 = str2 +  "Science [Movie] Igor! - Starts the Voting Process of Movie Night with [Movie], Movie Curator Role Only\n"
+                str2 = str2 +  "Vote [Yes/No] Igor! - Vote Yes or No in the Voting Process\n"
+                str2 = str2 +  "Pick [Voter] Igor! - Pick who will pick the next movie for Movie Nigh, Movie Curator Role can answer if needed\n"
+                str2 = str2 +  "Standings Igor! - Lists out the current vote\n"
+                str2 = str2 +  "Pause Igor! - Pauses the the Voting Process, Movie Curator Role Only\n"
+                str2 = str2 +  "Unpause Igor! - Unpauses the Voting Process, Movie Curator Role Only\n"
+                str2 = str2 +  "Stop Igor! - Stops the Voting Process, Movie Curator Role Only\n"
+                str2 = str2 +  "\n"
+                str2 = str2 +  "The following commands are only avalible to those with the Movie Curator Role:\n"
+                str2 = str2 +  "Time [time in seconds] Igor! - Changes the time we take per vote\n"
+                str2 = str2 +  "Reload Igor! - Reloads the movie and candidates list in case of issues\n"
+                yield from client.send_message(message.channel,str2)
 
-                yield from client.send_message(message.channel, "The following commands are for voting:\n")
-                yield from client.send_message(message.channel, "Science [Movie] Igor! - Starts the Voting Process of Movie Night with [Movie], Movie Curator Role Only")
-                yield from client.send_message(message.channel, "Vote [Yes/No] Igor! - Vote Yes or No in the Voting Process")
-                yield from client.send_message(message.channel, "Pick [Voter] Igor! - Pick who will pick the next movie for Movie Nigh, Movie Curator Role can answer if needed")
-                yield from client.send_message(message.channel, "Standings Igor! - Lists out the current vote")
-                yield from client.send_message(message.channel, "Pause Igor! - Pauses the the Voting Process, Movie Curator Role Only")
-                yield from client.send_message(message.channel, "Unpause Igor! - Unpauses the Voting Process, Movie Curator Role Only")
-                yield from client.send_message(message.channel, "Stop Igor! - Stops the Voting Process, Movie Curator Role Only\n")
-
-                yield from client.send_message(message.channel, "The following commands are only avalible to those with the Movie Curator Role:\n")
-                yield from client.send_message(message.channel, "Time [time in seconds] Igor! - Changes the time we take per vote")
-                yield from client.send_message(message.channel, "Reload Igor! - Reloads the movie and candidates list in case of issues")
 
         if message.content.startswith('i want to watch'):
             yield from client.send_message(message.channel, "When it's your turn to choose movie night, you can pick whatever movie you want")
